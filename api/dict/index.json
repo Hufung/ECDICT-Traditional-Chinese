@@ -1,0 +1,8 @@
+{
+  "name": "ECDICT Traditional Chinese",
+  "version": "1.0.0",
+  "description": "English-Chinese Dictionary Database (Traditional Chinese)",
+  "total_files": 770,
+  "file_pattern": "{chunk_num:04d}.json",
+  "base_url": "https://raw.githubusercontent.com/Hufung/ECDICT-Traditional-Chinese-API/main/dict"
+}
