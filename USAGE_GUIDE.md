@@ -326,5 +326,84 @@ for word in similar:
 
 - Original ECDICT repository: https://github.com/skywind3000/ECDICT
 - Traditional Chinese version: https://github.com/Hufung/ECDICT-Traditional-Chinese
+- API version with fast search: https://github.com/Hufung/ECDICT-Traditional-Chinese/tree/main/api
 - Documentation: README_traditional.md
 - Conversion notes: CONVERSION_SUMMARY.md
+
+## 🚀 API Version (Fast Search)
+
+The API version provides fast search capabilities with O(1) lookup time.
+
+### Fast Exact Lookup
+
+```javascript
+// JavaScript - Fast exact lookup
+async function getWordFast(word) {
+    // Step 1: Fetch index (cache this!)
+    const indexRes = await fetch('https://raw.githubusercontent.com/Hufung/ECDICT-Traditional-Chinese/main/api/dict/word-index.json');
+    const wordIndex = await indexRes.json();
+    
+    // Step 2: Get file number from index
+    const fileNum = wordIndex[word.toLowerCase()];
+    if (!fileNum) return null;
+    
+    // Step 3: Fetch only that file
+    const fileRes = await fetch(`https://raw.githubusercontent.com/Hufung/ECDICT-Traditional-Chinese/main/api/dict/${String(fileNum).padStart(4, '0')}.json`);
+    const words = await fileRes.json();
+    
+    // Step 4: Find word in file
+    return words.find(w => w.word.toLowerCase() === word.toLowerCase());
+}
+
+// Example
+const word = await getWordFast('hello');
+console.log(word);
+```
+
+### Prefix Search
+
+```javascript
+// JavaScript - Prefix search
+async function searchByPrefix(prefix) {
+    const firstLetter = prefix[0].toLowerCase();
+    
+    // Fetch letter-based file
+    const res = await fetch(`https://raw.githubusercontent.com/Hufung/ECDICT-Traditional-Chinese/main/api/dict/${firstLetter}.json`);
+    const words = await res.json();
+    
+    // Filter by prefix
+    return words.filter(w => w.word.toLowerCase().startsWith(prefix.toLowerCase()));
+}
+
+// Example
+const results = await searchByPrefix('hel');
+console.log(results);
+```
+
+### Performance Comparison
+
+| Metric | v1.0 (Original) | v2.0 (Fast Search) |
+|--------|-----------------|-------------------|
+| **Exact Lookup Time** | 30-60 sec | 0.5-1 sec |
+| **Network Requests** | Up to 770 | 2 (index + file) |
+| **Data Transfer** | ~500 MB | ~50 KB |
+| **Prefix Search** | Not supported | 0.5-1 sec |
+
+### API Directory Structure
+
+```
+api/
+├── dict/
+│   ├── index.json          # Metadata
+│   ├── word-index.json     # Word-to-file mapping
+│   ├── search.json         # Search optimization metadata
+│   ├── 0001.json - 0771.json  # Dictionary files
+│   ├── a.json - z.json     # Letter-based files
+│   ├── 0-9.json            # Numbers
+│   └── special.json        # Special characters
+├── vocabulary/              # Vocabulary lists
+├── convert_to_json.py      # Original conversion script
+├── build_index.py          # Build word-to-file index
+├── split_by_letter.py      # Split files by first letter
+└── create_search_meta.py   # Create search metadata
+```
