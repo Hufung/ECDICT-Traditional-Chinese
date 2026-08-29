@@ -1,8 +1,23 @@
 {
   "name": "ECDICT Traditional Chinese",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "English-Chinese Dictionary Database (Traditional Chinese)",
   "total_files": 770,
   "file_pattern": "{chunk_num:04d}.json",
-  "base_url": "https://raw.githubusercontent.com/Hufung/ECDICT-Traditional-Chinese-API/main/dict"
+  "base_url": "https://raw.githubusercontent.com/Hufung/ECDICT-Traditional-Chinese/main/api/dict",
+  "features": {
+    "fast_search": {
+      "word_index": "word-index.json",
+      "description": "Word-to-file mapping for O(1) lookup",
+      "size": "~5 MB"
+    },
+    "letter_files": {
+      "description": "Letter-based files (a.json, b.json, etc.) for prefix search",
+      "letters": ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0-9", "special"]
+    },
+    "search_metadata": {
+      "file": "search.json",
+      "description": "Search optimization metadata and statistics"
+    }
+  }
 }
